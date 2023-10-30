@@ -1,0 +1,40 @@
+def MWIS(G):
+    A = []
+    B = []
+    i = 0
+    
+    for weight in G:
+        if i == 0:
+            A.append(weight)
+            B.append(i)
+        elif i == 1:
+            A.append(max(G[0], G[1]))
+            B.append(i if G[0] > G[1] else 0)
+        else:
+            without_current = A[i - 1]  # MWIS without the current vertex
+            with_current = A[i - 2] + weight  # MWIS with the current vertex
+
+            if with_current > without_current:
+                A.append(with_current)
+                B.append(i)
+            else:
+                A.append(without_current)
+                B.append(B[i - 1])
+        
+        i += 1
+    
+    # Construct the MWIS by backtracking using B
+    mwis = set()
+    i = len(B) - 1
+    while i >= 0:
+        if i == B[i]:
+            mwis.add(i)
+        i = i - 1 if i == B[i] else i - 2
+
+    return A[-1], sorted(mwis)
+
+exG = [1, 4, 2, 6, 1, 20]  # MWIS is {1, 3} (0-based indices)
+
+max_weight, mwis_indices = MWIS(exG)
+print("The maximum weight is " + str(max_weight))
+print("Indices of the Maximum Weighted Independent Set: " + str(mwis_indices))
